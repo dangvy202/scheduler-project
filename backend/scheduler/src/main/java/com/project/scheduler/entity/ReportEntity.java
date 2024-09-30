@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -32,4 +34,6 @@ public class ReportEntity {
     @Column(name = "frequency")
     private String frequency;
 
+    @ManyToMany(mappedBy = "reports", cascade = CascadeType.ALL)
+    private Set<UserEntity> users = new HashSet<>();
 }

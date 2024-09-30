@@ -14,4 +14,6 @@ public class ReportRequest {
     private String frequency;
     @NotNull
     private Date time;
+    @NotNull
+    private String email;
 }
