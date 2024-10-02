@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -62,8 +63,20 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<ReportResponse> getAllScheduler() {
-        return null;
+    public ResultDTO<List<ReportResponse>> getAllScheduler() {
+        List<ReceiveReportEntity> receiveReportEntities = receiveReportRepository.findAll();
+        return ResultDTO.<List<ReportResponse>>builder()
+                .code(200)
+                .status(ReportConstant.REPORT_SUCCESS)
+                .message(ReportConstant.REPORT_SUCCESS)
+                .content(receiveReportEntities.stream().map(x -> ReportResponse.builder()
+                        .description(x.getReport().getDescription())
+                        .title(x.getReport().getTitle())
+                        .time(x.getReport().getTime())
+                        .frequency(x.getReport().getFrequency())
+                        .email(x.getUser().getEmail())
+                        .build()).collect(Collectors.toList()))
+                .build();
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ReportService {
     ResultDTO<ReportResponse> createReport(ReportRequest request);
-    List<ReportResponse> getAllScheduler();
+    ResultDTO<List<ReportResponse>> getAllScheduler();
     ResultDTO<ReportResponse> getReportById(long id);
     ResultDTO<ReportResponse> updateReportById(long id,ReportRequest request);
 }

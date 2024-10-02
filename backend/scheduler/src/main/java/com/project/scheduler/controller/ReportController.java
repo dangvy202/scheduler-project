@@ -48,7 +48,7 @@ public class ReportController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReportResponse>> getAllConfigs() {
-        return null;
+    public ResponseEntity<ResultDTO<List<ReportResponse>>> getAllConfigs() {
+        return new ResponseEntity<>(service.getAllScheduler(),HttpStatus.OK);
     }
 }
