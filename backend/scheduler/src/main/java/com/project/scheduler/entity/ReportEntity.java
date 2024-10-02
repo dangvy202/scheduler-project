@@ -1,5 +1,6 @@
 package com.project.scheduler.entity;
 
+import com.project.scheduler.enums.ReportEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,7 +32,8 @@ public class ReportEntity {
     private Date time;
 
     @Column(name = "frequency")
-    private String frequency;
+    @Enumerated(EnumType.STRING)
+    private ReportEnum frequency;
 
     @ManyToMany(mappedBy = "reports", cascade = CascadeType.ALL)
     private Set<UserEntity> users = new HashSet<>();
