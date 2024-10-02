@@ -4,8 +4,10 @@ import com.project.scheduler.constant.ReportConstant;
 import com.project.scheduler.dto.ReportRequest;
 import com.project.scheduler.dto.ReportResponse;
 import com.project.scheduler.dto.result.ResultDTO;
+import com.project.scheduler.entity.ReceiveReportEntity;
 import com.project.scheduler.entity.ReportEntity;
 import com.project.scheduler.entity.UserEntity;
+import com.project.scheduler.repository.ReceiveReportRepository;
 import com.project.scheduler.repository.ReportRepository;
 import com.project.scheduler.repository.UserRepository;
 import com.project.scheduler.service.ReportService;
@@ -26,6 +28,7 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
+    private final ReceiveReportRepository receiveReportRepository;
 
     @Override
     @Transactional
@@ -65,31 +68,50 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ResultDTO<ReportResponse> getReportById(long id) {
-        Optional<UserEntity> user = userRepository.findById(id);
-        ReportResponse response = user.get().getReports().stream().map(x -> ReportResponse.builder()
-                        .description(x.getDescription())
-                        .title(x.getTitle())
-                        .time(x.getTime())
-                        .frequency(x.getFrequency())
-                        .email(user.get().getEmail())
-                        .build())
-                .findFirst()
-                .orElseThrow(() -> new EntityExistsException("Can't find"));
+        ReceiveReportEntity reportEntity = receiveReportRepository.findReceiveReportEntityByUserId(id);
+        if(reportEntity != null) {
+            ReportResponse response = ReportResponse.builder()
+                            .description(reportEntity.getReport().getDescription())
+                            .title(reportEntity.getReport().getTitle())
+                            .time(reportEntity.getReport().getTime())
+                            .frequency(reportEntity.getReport().getFrequency())
+                            .email(reportEntity.getUser().getEmail())
+                            .build();
+            return ResultDTO.<ReportResponse>builder()
+                    .code(200)
+                    .status(ReportConstant.REPORT_SUCCESS)
+                    .message(ReportConstant.REPORT_SUCCESS)
+                    .content(response)
+                    .build();
+        }
         return ResultDTO.<ReportResponse>builder()
-                .code(200)
-                .status(ReportConstant.REPORT_SUCCESS)
-                .message(ReportConstant.REPORT_SUCCESS)
-                .content(response)
+                .code(404)
+                .status(ReportConstant.REPORT_FAIL)
+                .message(ReportConstant.REPORT_FAIL)
+                .content(null)
                 .build();
     }
 
     @Override
-    public ResultDTO<ReportResponse> updateReportById(long id) {
-        ReportResponse response = this.getReportById(id).getContent();
-        //update
-        Optional<UserEntity> user = userRepository.findById(id);
-        ReportEntity report = user.get().
-
-        return null;
+    public ResultDTO<ReportResponse> updateReportById(long id,ReportRequest request) {
+        ReceiveReportEntity receiveReportEntity = receiveReportRepository.findReceiveReportEntityByUserId(id);
+        if(receiveReportEntity != null) {
+            ReportEntity reportEntity = receiveReportEntity.getReport();
+            reportEntity.setTime(request.getTime());
+            reportEntity.setFrequency(request.getFrequency());
+            reportRepository.save(reportEntity);
+            return ResultDTO.<ReportResponse>builder()
+                    .code(200)
+                    .status(ReportConstant.REPORT_SUCCESS)
+                    .message(ReportConstant.REPORT_SUCCESS)
+                    .content(null)
+                    .build();
+        }
+        return ResultDTO.<ReportResponse>builder()
+                .code(404)
+                .status(ReportConstant.REPORT_FAIL)
+                .message(ReportConstant.REPORT_FAIL)
+                .content(null)
+                .build();
     }
 }
