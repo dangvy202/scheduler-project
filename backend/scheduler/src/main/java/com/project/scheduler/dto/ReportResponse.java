@@ -16,5 +16,5 @@ public class ReportResponse{
     private String title;
     private Date time;
     private String frequency;
-
+    private String email;
 }

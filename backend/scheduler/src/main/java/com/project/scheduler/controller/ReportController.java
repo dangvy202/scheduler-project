@@ -29,6 +29,21 @@ public class ReportController {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @GetMapping("{/id}")
+    public ResponseEntity<ResultDTO<ReportResponse>> getReportById(@PathVariable("id") long id) {
+        ResultDTO<ReportResponse> response = service.getReportById(id);
+        if(response.getCode() == 200) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResultDTO<ReportResponse>> updateReport(@PathVariable("id") long id,@RequestBody @Valid ReportRequest request) {
+        ResultDTO<ReportResponse> response = service.getReportById(id);
+
+    }
+
     @GetMapping
     public ResponseEntity<List<ReportResponse>> getAllConfigs() {
         return null;
