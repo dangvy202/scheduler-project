@@ -1,5 +1,9 @@
 package com.project.scheduler.service.Impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import com.project.scheduler.constant.ReportConstant;
 import com.project.scheduler.dto.ReportRequest;
 import com.project.scheduler.dto.ReportResponse;
@@ -11,6 +15,7 @@ import com.project.scheduler.repository.ReceiveReportRepository;
 import com.project.scheduler.repository.ReportRepository;
 import com.project.scheduler.repository.UserRepository;
 import com.project.scheduler.service.ReportService;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +37,53 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final ReceiveReportRepository receiveReportRepository;
+
+    @PostConstruct
+    public void init() {
+        List<ReceiveReportEntity> reportEntity = receiveReportRepository.findAll();
+        ScheduledExecutorService thread = Executors.newScheduledThreadPool(5);
+
+        for (ReceiveReportEntity element : reportEntity) {
+            thread.submit(() -> {
+                // TODO: Setup time client into Scheduler
+               while (true) {
+                   try {
+                       Date dt = new Date();
+                       LocalDateTime nextDay = LocalDateTime.from(dt.toInstant()).withHour(8).withMinute(0).withSecond(0).withNano(0).plusDays(1);
+                       LocalDateTime nextMonth = LocalDateTime.from(dt.toInstant()).withHour(8).withMinute(0).withSecond(0).withNano(0).plusMonths(1);
+                       LocalDateTime nextYear = LocalDateTime.from(dt.toInstant()).withHour(8).withMinute(0).withSecond(0).withNano(0).plusYears(1);
+                       LocalDateTime currentTime = LocalDateTime.now();
+
+                       if (currentTime.isAfter(nextDay)) {
+                           System.out.println("Check " + element.getReport().getFrequency());
+                           System.out.println("Check2 " + element.getReport().getTime());
+                           System.out.println("Check " + element.getUser().getEmail());
+                           nextDay = nextDay.plusDays(1);
+                       }
+
+                       if (currentTime.isAfter(nextMonth)) {
+                           System.out.println("Check " + element.getReport().getFrequency());
+                           System.out.println("Check2 " + element.getReport().getTime());
+                           System.out.println("Check " + element.getUser().getEmail());
+                           nextMonth = nextMonth.plusMonths(1);
+                       }
+
+                       if (currentTime.isAfter(nextYear)) {
+                           System.out.println("Check " + element.getReport().getFrequency());
+                           System.out.println("Check2 " + element.getReport().getTime());
+                           System.out.println("Check " + element.getUser().getEmail());
+                           nextYear = nextYear.plusYears(1);
+                       }
+
+                       Thread.sleep(5000);
+                   } catch (InterruptedException e) {
+                       Thread.currentThread().interrupt();
+                       break;
+                   }
+               }
+            });
+        }
+    }
 
     @Override
     @Transactional

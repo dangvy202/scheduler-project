@@ -1,6 +1,7 @@
 package com.project.scheduler.dto;
 
 import com.project.scheduler.dto.result.ResultDTO;
+import com.project.scheduler.enums.ReportEnum;
 import jakarta.persistence.Column;
 import lombok.*;
 
@@ -15,6 +16,6 @@ public class ReportResponse{
     private String description;
     private String title;
     private Date time;
-    private String frequency;
+    private ReportEnum frequency;
     private String email;
 }

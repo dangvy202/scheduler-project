@@ -1,5 +1,6 @@
 package com.project.scheduler.dto;
 
+import com.project.scheduler.enums.ReportEnum;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import java.util.Date;
 @Setter
 public class ReportRequest {
     @NotNull
-    private String frequency;
+    private ReportEnum frequency;
     @NotNull
     private Date time;
     @NotNull
