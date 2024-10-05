@@ -2,6 +2,7 @@ package com.project.scheduler.service.Impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import com.project.scheduler.constant.ReportConstant;
@@ -11,6 +12,7 @@ import com.project.scheduler.dto.result.ResultDTO;
 import com.project.scheduler.entity.ReceiveReportEntity;
 import com.project.scheduler.entity.ReportEntity;
 import com.project.scheduler.entity.UserEntity;
+import com.project.scheduler.enums.ReportEnum;
 import com.project.scheduler.repository.ReceiveReportRepository;
 import com.project.scheduler.repository.ReportRepository;
 import com.project.scheduler.repository.UserRepository;
@@ -45,34 +47,24 @@ public class ReportServiceImpl implements ReportService {
 
         for (ReceiveReportEntity element : reportEntity) {
             thread.submit(() -> {
-                // TODO: Setup time client into Scheduler
                while (true) {
                    try {
-                       Date dt = new Date();
-                       LocalDateTime nextDay = LocalDateTime.from(dt.toInstant()).withHour(8).withMinute(0).withSecond(0).withNano(0).plusDays(1);
-                       LocalDateTime nextMonth = LocalDateTime.from(dt.toInstant()).withHour(8).withMinute(0).withSecond(0).withNano(0).plusMonths(1);
-                       LocalDateTime nextYear = LocalDateTime.from(dt.toInstant()).withHour(8).withMinute(0).withSecond(0).withNano(0).plusYears(1);
+                       LocalDateTime dateRecord = element.getReport().getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                       LocalDateTime nextDay = dateRecord.plusDays(1);
+                       LocalDateTime nextMonth = dateRecord.plusMonths(1);
+                       LocalDateTime nextYear = dateRecord.plusYears(1);
                        LocalDateTime currentTime = LocalDateTime.now();
 
-                       if (currentTime.isAfter(nextDay)) {
-                           System.out.println("Check " + element.getReport().getFrequency());
-                           System.out.println("Check2 " + element.getReport().getTime());
-                           System.out.println("Check " + element.getUser().getEmail());
-                           nextDay = nextDay.plusDays(1);
+                       if (currentTime.isBefore(nextDay) && element.getReport().getFrequency().equals(ReportEnum.DAILY)) {
+                           sendMailAndUpdateTime(currentTime,nextDay,element);
                        }
 
-                       if (currentTime.isAfter(nextMonth)) {
-                           System.out.println("Check " + element.getReport().getFrequency());
-                           System.out.println("Check2 " + element.getReport().getTime());
-                           System.out.println("Check " + element.getUser().getEmail());
-                           nextMonth = nextMonth.plusMonths(1);
+                       if (currentTime.isBefore(nextMonth) && element.getReport().getFrequency().equals(ReportEnum.WEEKLY)) {
+                           sendMailAndUpdateTime(currentTime,nextMonth,element);
                        }
 
-                       if (currentTime.isAfter(nextYear)) {
-                           System.out.println("Check " + element.getReport().getFrequency());
-                           System.out.println("Check2 " + element.getReport().getTime());
-                           System.out.println("Check " + element.getUser().getEmail());
-                           nextYear = nextYear.plusYears(1);
+                       if (currentTime.isBefore(nextYear) && element.getReport().getFrequency().equals(ReportEnum.YEARLY)) {
+                           sendMailAndUpdateTime(currentTime,nextYear,element);
                        }
 
                        Thread.sleep(5000);
@@ -83,6 +75,17 @@ public class ReportServiceImpl implements ReportService {
                }
             });
         }
+    }
+
+    private void sendMailAndUpdateTime(LocalDateTime currentTime, LocalDateTime nextTime,ReceiveReportEntity receiveReportEntity) {
+        if(currentTime.isEqual(nextTime)) {
+            //update time
+            Date date = Date.from(nextTime.atZone(ZoneId.systemDefault()).toInstant());
+            ReportEntity reportEntity = receiveReportEntity.getReport();
+            reportEntity.setTime(date);
+            reportRepository.save(reportEntity);
+        }
+
     }
 
     @Override

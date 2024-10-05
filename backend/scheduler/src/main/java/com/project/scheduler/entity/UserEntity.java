@@ -22,7 +22,7 @@ public class UserEntity {
     @Column(name = "email")
     private String email;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(
             name = "receive_report",
             joinColumns = @JoinColumn(name = "user_id"),
