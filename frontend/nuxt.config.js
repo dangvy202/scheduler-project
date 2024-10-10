@@ -1,5 +1,24 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
+  router: {
+    extendRoutes(routes, resolve) {
+      routes.push({
+        name: 'custom-home',
+        path: '/',
+        component: resolve(__dirname, 'pages/index.vue')
+      });
+      routes.push({
+        name: 'detail-page',
+        path: '/detail',
+        component: resolve(__dirname, 'pages/scheduler.vue')
+      });
+      routes.push({
+        name: 'edit-page',
+        path: '/edit',
+        component: resolve(__dirname, 'pages/edit.vue')
+      });
+    }
+  },
   head: {
     title: 'scheduler-frontend',
     htmlAttrs: {
