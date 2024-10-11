@@ -1,42 +1,31 @@
-//package com.project.scheduler.service.Impl;
-//
-//import java.time.LocalDateTime;
-//import java.time.ZoneId;
-//import java.util.Date;
-//
-//import com.project.scheduler.constant.ReportConstant;
-//import com.project.scheduler.dto.ReportRequest;
-//import com.project.scheduler.dto.ReportResponse;
-//import com.project.scheduler.dto.result.ResultDTO;
-//import com.project.scheduler.entity.ScheduleTaskEntity;
-//import com.project.scheduler.entity.ReportEntity;
-//import com.project.scheduler.entity.UserEntity;
-//import com.project.scheduler.enums.ReportEnum;
-//import com.project.scheduler.repository.ReceiveReportRepository;
-//import com.project.scheduler.repository.ReportRepository;
-//import com.project.scheduler.repository.UserRepository;
-//import com.project.scheduler.service.ReportService;
-//import jakarta.annotation.PostConstruct;
-//import jakarta.transaction.Transactional;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//import java.util.Set;
-//import java.util.concurrent.Executors;
-//import java.util.concurrent.ScheduledExecutorService;
-//import java.util.stream.Collectors;
-//
-//@Slf4j
-//@Service
-//@RequiredArgsConstructor
-//public class ReportServiceImpl implements ReportService {
-//
-//    private final ReportRepository reportRepository;
-//    private final UserRepository userRepository;
-//    private final ReceiveReportRepository receiveReportRepository;
-//
+package com.project.scheduler.service.Impl;
+
+import com.project.scheduler.constant.ReportConstant;
+import com.project.scheduler.dto.SettingResponse;
+import com.project.scheduler.dto.result.ResultDTO;
+import com.project.scheduler.entity.ScheduleTaskEntity;
+import com.project.scheduler.repository.ReportRepository;
+import com.project.scheduler.repository.ScheduleTaskRepository;
+import com.project.scheduler.repository.UserRepository;
+import com.project.scheduler.repository.UserSettingRepository;
+import com.project.scheduler.service.ReportService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ReportServiceImpl implements ReportService {
+
+    private final ReportRepository reportRepository;
+    private final UserRepository userRepository;
+    private final ScheduleTaskRepository scheduleTaskRepository;
+    private final UserSettingRepository userSettingRepository;
+
 //    @PostConstruct
 //    public void init() {
 //        List<ScheduleTaskEntity> reportEntity = receiveReportRepository.findAll();
@@ -115,24 +104,35 @@
 //                    .content(null).build();
 //        }
 //    }
-//
-//    @Override
-//    public ResultDTO<List<ReportResponse>> getAllScheduler() {
-//        List<ScheduleTaskEntity> receiveReportEntities = receiveReportRepository.findAll();
-//        return ResultDTO.<List<ReportResponse>>builder()
-//                .code(200)
-//                .status(ReportConstant.REPORT_SUCCESS)
-//                .message(ReportConstant.REPORT_SUCCESS)
-//                .content(receiveReportEntities.stream().map(x -> ReportResponse.builder()
-//                        .description(x.getReport().getDescription())
-//                        .title(x.getReport().getTitle())
-//                        .time(x.getReport().getTime())
-//                        .frequency(x.getReport().getFrequency())
-//                        .email(x.getUser().getEmail())
-//                        .build()).collect(Collectors.toList()))
-//                .build();
-//    }
-//
+
+    @Override
+    public ResultDTO<List<SettingResponse>> getAllScheduler() {
+        List<ScheduleTaskEntity> scheduleTasks = scheduleTaskRepository.findAll();
+        return ResultDTO.<List<SettingResponse>>builder()
+                .code(200)
+                .status(ReportConstant.REPORT_SUCCESS)
+                .message(ReportConstant.REPORT_SUCCESS)
+                .content(
+                    scheduleTasks.stream().map(x -> SettingResponse.builder()
+                            .userSetting(SettingResponse.UserSettingResponse.builder()
+                                    .dayOfMonth(x.getUserSetting().getDayOfMonth())
+                                    .dayOfWeek(x.getUserSetting().getDayOfWeek())
+                                    .frequency(x.getUserSetting().getFrequency().getFrequencyValue())
+                                    .timeOfDay(x.getUserSetting().getTimeOfDay())
+                                    .user(SettingResponse.UserSettingResponse.UserResponse.builder()
+                                            .email(x.getUser().getEmail())
+                                            .name(x.getUser().getName())
+                                            .build())
+                                    .report(SettingResponse.UserSettingResponse.ReportResponse.builder()
+                                            .reportName(x.getUserSetting().getReport().getReportName())
+                                            .description(x.getUserSetting().getReport().getDescription())
+                                            .build())
+                                    .build()).build())
+                    .collect(Collectors.toList())
+                )
+                .build();
+    }
+
 //    @Override
 //    public ResultDTO<ReportResponse> getReportById(long id) {
 //        ScheduleTaskEntity reportEntity = receiveReportRepository.findReceiveReportEntityByUserId(id);
@@ -181,4 +181,4 @@
 //                .content(null)
 //                .build();
 //    }
-//}
+}

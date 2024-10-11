@@ -29,11 +29,11 @@ public class ScheduleTaskEntity {
     @Column(name = "result")
     private String result;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user", referencedColumnName = "id")
-    private Set<UserEntity> user;
+    private UserEntity user;
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "id_config", referencedColumnName = "id")
-    private Set<UserSetting> userSetting;
+    private UserSettingEntity userSetting;
 }

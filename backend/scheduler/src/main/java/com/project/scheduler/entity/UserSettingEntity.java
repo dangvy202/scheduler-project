@@ -12,12 +12,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSetting {
+public class UserSettingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "frequency")
+    @Enumerated(EnumType.STRING)
     private ReportEnum frequency;
 
     @Column(name = "day_of_week")
