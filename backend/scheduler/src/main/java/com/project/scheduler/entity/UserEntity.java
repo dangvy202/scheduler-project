@@ -22,11 +22,6 @@ public class UserEntity {
     @Column(name = "email")
     private String email;
 
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "receive_report",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "report_id")
-    )
-    private Set<ReportEntity> reports = new HashSet<>();
+    @Column(name = "name")
+    private String name;
 }

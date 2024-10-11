@@ -22,19 +22,9 @@ public class ReportEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "report_name")
+    private String reportName;
+
     @Column(name = "description")
     private String description;
-
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "time")
-    private Date time;
-
-    @Column(name = "frequency")
-    @Enumerated(EnumType.STRING)
-    private ReportEnum frequency;
-
-    @ManyToMany(mappedBy = "reports", cascade = CascadeType.ALL)
-    private Set<UserEntity> users = new HashSet<>();
 }

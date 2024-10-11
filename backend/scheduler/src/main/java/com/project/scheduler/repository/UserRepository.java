@@ -9,6 +9,4 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity,Long> {
-    @Query("SELECT u FROM UserEntity u JOIN FETCH u.reports WHERE u.id = :id")
-    Optional<UserEntity> findUserAndReportById(long id);
 }
