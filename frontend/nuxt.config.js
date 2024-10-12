@@ -17,6 +17,11 @@ export default {
         path: '/edit',
         component: resolve(__dirname, 'pages/edit.vue')
       });
+      routes.push({
+        name: 'create-page',
+        path: '/create',
+        component: resolve(__dirname, 'pages/create.vue')
+      });
     }
   },
   head: {

@@ -4,6 +4,7 @@ import Router from 'vue-router';
 import Home from '../pages/index.vue';
 import Detail from '../pages/scheduler.vue';
 import Edit from '../pages/edit.vue';
+import Create from '../pages/create.vue';
 
 Vue.use(Router);
 
@@ -22,6 +23,11 @@ const routes = [
     path: '/edit',
     name: 'Edit',
     component: Edit,
+  },
+  {
+    path: '/create',
+    name: 'Create',
+    component: Create,
   },
 ];
 

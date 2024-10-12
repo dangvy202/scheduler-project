@@ -7,7 +7,7 @@ import com.project.scheduler.dto.result.ResultDTO;
 import java.util.List;
 
 public interface ReportService {
-//    ResultDTO<ReportResponse> createReport(ReportRequest request);
+    ResultDTO<SettingResponse> createReport(ReportRequest request);
     ResultDTO<List<SettingResponse>> getAllScheduler();
 //    ResultDTO<ReportResponse> getReportById(long id);
 //    ResultDTO<ReportResponse> updateReportById(long id,ReportRequest request);

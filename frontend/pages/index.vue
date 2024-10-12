@@ -4,7 +4,9 @@
       <h1>CRM Schedule Management</h1>
     </header>
     <main>
-      <button @click="handleClick" class="my-button">Create</button>
+      <div class="button-create-schedule">
+        <router-link to="/create" class="my-button">Create</router-link>
+      </div>
       <UserList :users="users" />
     </main>
   </div>
@@ -35,6 +37,9 @@ export default {
 </script>
 
 <style scoped>
+.button-create-schedule {
+  padding-bottom:20px
+}
 .my-button {
   padding:2%;
   border-radius:100px;

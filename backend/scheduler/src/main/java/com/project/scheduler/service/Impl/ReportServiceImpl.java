@@ -1,14 +1,19 @@
 package com.project.scheduler.service.Impl;
 
 import com.project.scheduler.constant.ReportConstant;
+import com.project.scheduler.dto.ReportRequest;
 import com.project.scheduler.dto.SettingResponse;
 import com.project.scheduler.dto.result.ResultDTO;
+import com.project.scheduler.entity.ReportEntity;
 import com.project.scheduler.entity.ScheduleTaskEntity;
+import com.project.scheduler.entity.UserEntity;
+import com.project.scheduler.entity.UserSettingEntity;
 import com.project.scheduler.repository.ReportRepository;
 import com.project.scheduler.repository.ScheduleTaskRepository;
 import com.project.scheduler.repository.UserRepository;
 import com.project.scheduler.repository.UserSettingRepository;
 import com.project.scheduler.service.ReportService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -73,37 +78,48 @@ public class ReportServiceImpl implements ReportService {
 //        }
 //
 //    }
-//
-//    @Override
-//    @Transactional
-//    public ResultDTO<ReportResponse> createReport(ReportRequest request) {
-//        try{
-//            ReportEntity reportEntity = ReportEntity.builder()
-//                    .description("NEW PRODUCT")
-//                    .time(request.getTime())
-//                    .title("NOTIFICATION")
-//                    .frequency(request.getFrequency())
-//                    .build();
-//            reportRepository.save(reportEntity);
-//            UserEntity userEntity = UserEntity.builder()
-//                    .email(request.getEmail())
-//                    .reports(Set.of(reportEntity))
-//                    .build();
-//            userRepository.save(userEntity);
-//            return ResultDTO.<ReportResponse>builder()
-//                    .code(200)
-//                    .status(ReportConstant.REPORT_SUCCESS)
-//                    .message(ReportConstant.REPORT_SUCCESS)
-//                    .content(null).build();
-//        } catch (Exception ex) {
-//            log.error(ex.getMessage());
-//            return ResultDTO.<ReportResponse>builder()
-//                    .code(500)
-//                    .status(ReportConstant.REPORT_FAIL)
-//                    .message(ex.getMessage())
-//                    .content(null).build();
-//        }
-//    }
+
+    @Override
+    @Transactional
+    public ResultDTO<SettingResponse> createReport(ReportRequest request) {
+        try{
+            UserEntity user = UserEntity.builder()
+                    .email(request.getEmail())
+                    .name(request.getName())
+                    .build();
+            userRepository.save(user);
+            ReportEntity report = reportRepository.findById(Long.parseLong(String.valueOf(request.getIdReport()))).get();
+            UserSettingEntity setting = UserSettingEntity.builder()
+                    .dayOfMonth(request.getDayOfMonth())
+                    .dayOfWeek(request.getDayOfWeek())
+                    .timeOfDay(request.getTimeOfDay())
+                    .report(report)
+                    .frequency(request.getFrequency())
+                    .user(user)
+                    .build();
+            userSettingRepository.save(setting);
+            ScheduleTaskEntity scheduleTask = ScheduleTaskEntity.builder()
+                    .result(ReportConstant.REPORT_SUCCESS)
+                    .status("APPROVE")
+                    .scheduleTime(request.getScheduleTime())
+                    .user(user)
+                    .userSetting(setting)
+                    .build();
+            scheduleTaskRepository.save(scheduleTask);
+            return ResultDTO.<SettingResponse>builder()
+                    .code(201)
+                    .status(ReportConstant.REPORT_SUCCESS)
+                    .message(ReportConstant.REPORT_SUCCESS)
+                    .content(null).build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResultDTO.<SettingResponse>builder()
+                    .code(500)
+                    .status(ReportConstant.REPORT_FAIL)
+                    .message(ex.getMessage())
+                    .content(null).build();
+        }
+    }
 
     @Override
     public ResultDTO<List<SettingResponse>> getAllScheduler() {
